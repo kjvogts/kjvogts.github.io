@@ -1,5 +1,5 @@
 <style>
-  header {
+ WELCOME {
     background-color: #e9d5ff; /* soft lavender */
     color: #333; /* darker text for readability */
     padding: 20px;
