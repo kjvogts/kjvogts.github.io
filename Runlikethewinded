@@ -145,3 +145,130 @@ async function logout(){
 
 </body>
 </html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Run Like the Winded - Home</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin:0;
+      font-family: system-ui;
+      background:#140a26;
+      color:white;
+      padding:40px;
+    }
+
+    .top {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .card {
+      margin-top:20px;
+      padding:20px;
+      background: rgba(255,255,255,0.06);
+      border-radius:12px;
+    }
+
+    input, button {
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+      border-radius:8px;
+      border:none;
+    }
+
+    button {
+      background:#f6e27a;
+      font-weight:bold;
+      cursor:pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="top">
+  <h2>Run Like the Winded</h2>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<div class="card">
+  <h3>Log a Run</h3>
+
+  <input id="distance" placeholder="Distance (km)">
+  <input id="time" placeholder="Time (minutes)">
+  <input id="notes" placeholder="Notes">
+
+  <button onclick="saveRun()">Save Run</button>
+</div>
+
+<div class="card">
+  <h3>Your Runs</h3>
+  <div id="runs"></div>
+</div>
+
+<script>
+const supabase = window.supabase.createClient(
+  "YOUR_SUPABASE_URL",
+  "YOUR_SUPABASE_ANON_KEY"
+);
+
+// 🔐 check login on page load
+async function checkUser(){
+  const { data } = await supabase.auth.getUser();
+
+  if (!data.user) {
+    window.location.href = "index.html";
+  }
+}
+checkUser();
+
+async function saveRun(){
+  const { data: userData } = await supabase.auth.getUser();
+
+  const distance = document.getElementById("distance").value;
+  const time = document.getElementById("time").value;
+  const notes = document.getElementById("notes").value;
+
+  await supabase.from("runs").insert([{
+    user_id: userData.user.id,
+    distance,
+    time_minutes: time,
+    notes
+  }]);
+
+  loadRuns();
+}
+
+async function loadRuns(){
+  const { data: userData } = await supabase.auth.getUser();
+
+  const { data } = await supabase
+    .from("runs")
+    .select("*")
+    .eq("user_id", userData.user.id)
+    .order("created_at", { ascending:false });
+
+  document.getElementById("runs").innerHTML =
+    data.map(r =>
+      `<div style="margin-top:10px;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px">
+        ${r.distance} km — ${r.time_minutes} min<br>
+        ${r.notes || ""}
+      </div>`
+    ).join("");
+}
+
+loadRuns();
+
+async function logout(){
+  await supabase.auth.signOut();
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
