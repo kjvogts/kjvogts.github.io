@@ -1,18 +1,3 @@
-<style>
- WELCOME {
-    background-color: #e9d5ff; /* soft lavender */
-    color: #333; /* darker text for readability */
-    padding: 20px;
-    text-align: center;
-  }
-
-  nav a {
-    color: #333;
-    margin: 0 10px;
-    text-decoration: none;
-  }
-
-  nav a:hover {
-    text-decoration: underline;
-  }
-</style>
+<header style="background-color:#2e1065; color:white; padding:20px; text-align:center;">
+  <h1>Welcome back</h1>
+</header>
